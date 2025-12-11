@@ -4,60 +4,61 @@ import numpy as np
 from PIL import Image
 import os
 
-st.sidebar.title("AgriSens")
-app_mode = st.sidebar.selectbox("Select Page", ["HOME", "DISEASE RECOGNITION"])
+# -----------------------------
+# LOAD MODEL SAFELY
+# -----------------------------
+MODEL_PATH = "trained_plant_disease_model.keras"
 
-# --------------------------
-# MODEL LOADING SAFE METHOD
-# --------------------------
-def load_model_safe():
-    if os.path.exists("trained_plant_disease_model.keras"):
-        return tf.keras.models.load_model("trained_plant_disease_model.keras", compile=False)
-    elif os.path.exists("trained_plant_disease_model.h5"):
-        return tf.keras.models.load_model("trained_plant_disease_model.h5", compile=False)
-    else:
-        st.error("❌ Model file missing! Please upload trained_plant_disease_model.keras or .h5")
-        st.stop()
+if not os.path.exists(MODEL_PATH):
+    st.error("❌ Model file not found! Keep 'trained_plant_disease_model.keras' in same folder as main.py")
+    st.stop()
 
-model = load_model_safe()
+model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
-# --------------------------
-# PREDICTION FUNCTION
-# --------------------------
-def model_prediction(test_image):
-    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128,128))
+# -----------------------------
+# MODEL PREDICTION FUNCTION
+# -----------------------------
+def model_prediction(img_path):
+    image = tf.keras.preprocessing.image.load_img(img_path, target_size=(128,128))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr])
     predictions = model.predict(input_arr)
     return np.argmax(predictions)
 
-# --------------------------
+# -----------------------------
+# SIDEBAR
+# -----------------------------
+st.sidebar.title("AgriSens")
+app_mode = st.sidebar.selectbox("Select Page", ["HOME", "DISEASE RECOGNITION"])
+
+# -----------------------------
 # HEADER IMAGE
-# --------------------------
+# -----------------------------
 try:
     img = Image.open("Diseases.png")
     st.image(img)
 except:
-    st.warning("⚠️ Diseases.png not found")
+    st.warning("⚠️ Diseases.png not found!")
 
-# --------------------------
+# -----------------------------
 # HOME PAGE
-# --------------------------
+# -----------------------------
 if app_mode == "HOME":
-    st.markdown("<h1 style='text-align: center;'>SMART DISEASE DETECTION</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center;'>SMART DISEASE DETECTION</h1>", unsafe_allow_html=True)
 
-# --------------------------
+# -----------------------------
 # DISEASE RECOGNITION PAGE
-# --------------------------
+# -----------------------------
 elif app_mode == "DISEASE RECOGNITION":
     st.header("DISEASE RECOGNITION")
-    uploaded_file = st.file_uploader("Choose an Image:")
+
+    uploaded_file = st.file_uploader("Choose an Image:", type=["jpg", "png", "jpeg"])
 
     if uploaded_file:
         st.image(uploaded_file, use_column_width=True)
 
         # Save temporarily
-        temp_path = "temp.jpg"
+        temp_path = "temp_uploaded_image.jpg"
         with open(temp_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
@@ -67,7 +68,6 @@ elif app_mode == "DISEASE RECOGNITION":
 
             result_index = model_prediction(temp_path)
 
-            # Labels
             class_name = [
                 'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
                 'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
@@ -85,12 +85,12 @@ elif app_mode == "DISEASE RECOGNITION":
                 'Tomato___healthy'
             ]
 
-            disease = class_name[result_index]
-            st.success(f"Model is predicting it's **{disease}** 🌿")
+            predicted_disease = class_name[result_index]
+            st.success(f"Model is predicting it's **{predicted_disease}** 🌿")
 
-            # -----------------------
-            # ADVISORY CARD (PREMIUM)
-            # -----------------------
+            # -------------------------------------------------------
+            # PREMIUM ADVISORY CARD
+            # -------------------------------------------------------
             st.markdown("""
             <div style='padding:20px; border-radius:18px; background:#f5faff;
                         box-shadow:0 4px 12px rgba(0,0,0,0.1); font-family:Poppins;'>
@@ -127,8 +127,8 @@ elif app_mode == "DISEASE RECOGNITION":
                     <h4>🌤️ Weather Precautions</h4>
                     <ul>
                         <li>Avoid spraying in rain/wind</li>
-                        <li>Humidity > 80% = High risk</li>
-                        <li>Spray early morning / evening</li>
+                        <li>Humidity > 80% increases disease</li>
+                        <li>Spray early morning or evening</li>
                     </ul>
                 </div>
 
