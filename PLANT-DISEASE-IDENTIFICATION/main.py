@@ -85,8 +85,15 @@ def load_model():
         if target_name in files:
             found_path = os.path.join(root, target_name)
             break
+            
+ st.write("🔍 Searching for model...")
 
-   
+    if found_path:
+        st.success(f"✅ Model Found at: {found_path}")
+        return tf.keras.models.load_model(found_path)
+
+    st.error("❌ Model NOT FOUND! Upload trained_plant_disease_model.keras in your repo.")
+    return None
 
 
 model = load_model()
