@@ -9,14 +9,16 @@ from PIL import Image
 # -----------------------------------------------------------
 st.set_page_config(page_title="AgriSens", layout="wide")
 
+
 # -----------------------------------------------------------
-# GITHUB RAW IMAGES (WORKS 100% ON STREAMLIT CLOUD)
+# RAW IMAGE LINKS (GitHub RAW WORKS 100% ON CLOUD)
 # -----------------------------------------------------------
 HERO_IMAGE = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Diseases.png"
 
 IMG_REALTIME = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Real-Time%20Results.png"
 IMG_INSIGHTS = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Actionable%20Insights.png"
 IMG_DETECTION = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Disease%20Detection.png"
+
 
 # -----------------------------------------------------------
 # HERO CSS
@@ -37,8 +39,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 # -----------------------------------------------------------
-# HERO IMAGE DISPLAY
+# HERO IMAGE
 # -----------------------------------------------------------
 st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
 st.image(HERO_IMAGE, use_column_width=True)
@@ -47,12 +50,35 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.write("")
 st.write("")
 
+
 # -----------------------------------------------------------
-# PAGE SELECTOR (CENTER DROPDOWN)
+# CENTER PAGE SELECTOR
 # -----------------------------------------------------------
-cols = st.columns(3)
-with cols[1]:
+col = st.columns(3)
+with col[1]:
     page = st.selectbox("Select a Page", ["HOME", "DISEASE RECOGNITION"])
+
+
+# -----------------------------------------------------------
+# MODEL LOADER (100% FIXED)
+# -----------------------------------------------------------
+@st.cache_resource
+def load_model():
+
+    # Absolute path ensures Cloud + Local both work
+    model_path = os.path.join(os.path.dirname(__file__), "trained_plant_disease_model.keras")
+
+    st.write("📁 Model Path:", model_path)  # DEBUG (you can remove later)
+
+    if os.path.exists(model_path):
+        return tf.keras.models.load_model(model_path)
+
+    st.error("❌ Model file NOT FOUND! Please check file name & location.")
+    return None
+
+
+model = load_model()
+
 
 # -----------------------------------------------------------
 # HOME PAGE
@@ -76,24 +102,22 @@ if page == "HOME":
     with col1:
         st.image(IMG_REALTIME, use_column_width=True)
         st.markdown("<p class='center-text'><b>Real-Time Results</b></p>", unsafe_allow_html=True)
-        st.write("Instant predictions using powerful AI models.")
 
     with col2:
         st.image(IMG_INSIGHTS, use_column_width=True)
         st.markdown("<p class='center-text'><b>Actionable Insights</b></p>", unsafe_allow_html=True)
-        st.write("Know disease details and recommended remedies.")
 
     with col3:
         st.image(IMG_DETECTION, use_column_width=True)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
-        st.write("Detect plant diseases with a single image.")
 
     st.write("## How It Works")
     st.markdown("""
-    1. Go to the **Disease Recognition** page.<br>
+    1. Select **Disease Recognition** page.<br>
     2. Upload a leaf image.<br>
-    3. Get instant detection and suggested actions.<br>
+    3. Get instant detection.<br>
     """, unsafe_allow_html=True)
+
 
 # -----------------------------------------------------------
 # DISEASE RECOGNITION PAGE
@@ -104,16 +128,6 @@ elif page == "DISEASE RECOGNITION":
     <h1 class='center-text' style='color:#2ecc71;'>🌿 Disease Recognition</h1>
     <p class='center-text' style='color:#bbb;'>Upload a plant leaf image to detect disease using AI.</p>
     """, unsafe_allow_html=True)
-
-    @st.cache_resource
-    def load_model():
-        model_path = "trained_plant_disease_model.keras"
-        if os.path.exists(model_path):
-            return tf.keras.models.load_model(model_path)
-        st.error("❌ Model file not found!")
-        return None
-
-    model = load_model()
 
     def predict_image(path):
         img = tf.keras.preprocessing.image.load_img(path, target_size=(128, 128))
@@ -132,13 +146,14 @@ elif page == "DISEASE RECOGNITION":
             f.write(uploaded.getbuffer())
 
         if st.button("🔍 Detect Disease"):
-            st.info("⏳ Processing...")
 
-            if model:
-                idx = predict_image(temp_path)
-                st.success(f"🌱 Predicted Disease Class Index: **{idx}**")
-            else:
+            if model is None:
                 st.error("❌ Model not loaded!")
+            else:
+                st.info("⏳ Processing...")
+                idx = predict_image(temp_path)
+                st.success(f"🌱 Predicted Class Index: **{idx}**")
+
 
 # -----------------------------------------------------------
 # FOOTER
