@@ -7,7 +7,7 @@ from PIL import Image
 # -----------------------------------------------------------
 # PAGE CONFIG
 # -----------------------------------------------------------
-st.set_page_config(page_title="AgriSens", layout="wide")
+st.set_page_config(page_title="Agri🌾Next", layout="wide")
 
 # -----------------------------------------------------------
 # RAW IMAGE LINKS
@@ -164,7 +164,8 @@ elif page == "DISEASE RECOGNITION":
 # -----------------------------------------------------------
 st.markdown("""
 <div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team AgriSens</b> | Powered by Streamlit
+Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit
 </div>
 """, unsafe_allow_html=True)
+
 
