@@ -32,7 +32,7 @@ st.markdown("""
 # -----------------------------------------------------------
 if os.path.exists("Diseases.png"):
     st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
-    st.image("banner.jpg", use_column_width=True)
+    st.image("Diseases.png", use_column_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.warning("⚠ banner.jpg फाइल सापडली नाही! कृपया कोड फोल्डरमध्ये ठेवा.")
@@ -199,4 +199,5 @@ st.markdown("""
 <p>Developer: Agri🌾Next</p>
 </div>
 """, unsafe_allow_html=True)
+
 
