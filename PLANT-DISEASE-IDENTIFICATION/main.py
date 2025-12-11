@@ -5,30 +5,82 @@ import os
 from PIL import Image
 
 # -----------------------------------------------------------
-# PAGE CONFIG
+# PAGE SETUP
 # -----------------------------------------------------------
-st.set_page_config(page_title="AgriNext – स्मार्ट रोग निदान", layout="centered")
+st.set_page_config(page_title="AgriSens – Smart Disease Detection", layout="wide")
 
 
 # -----------------------------------------------------------
-# FINAL CLEAN MODEL LOADER (AUTO-DETECT)
+# GLOBAL CSS FOR FULL UI
+# -----------------------------------------------------------
+st.markdown("""
+<style>
+
+body {
+    background-color: #0f1116 !important;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', sans-serif;
+    color: #7CFF6B !important;
+}
+
+p, li {
+    color: #d8d8d8;
+    font-size: 18px;
+}
+
+.section-title {
+    font-size: 45px;
+    text-align: center;
+    font-weight: 700;
+    color: #7CFF6B;
+    margin-top: 30px;
+}
+
+.feature-card {
+    background: #171b22;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+    transition: 0.3s ease;
+    box-shadow: 0px 0px 10px rgba(0,255,150,0.08);
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 0px 25px rgba(0,255,150,0.2);
+}
+
+.feature-title {
+    font-size: 20px;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.feature-desc {
+    font-size: 16px;
+    color: #bdbdbd;
+    margin-top: 5px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# -----------------------------------------------------------
+# MODEL LOADER
 # -----------------------------------------------------------
 @st.cache_resource
 def load_model():
 
     model_name = "trained_plant_disease_model.keras"
-    found_path = None
 
-    # Search silently
     for root, dirs, files in os.walk(".", topdown=True):
         if model_name in files:
-            found_path = os.path.join(root, model_name)
-            break
+            return tf.keras.models.load_model(os.path.join(root, model_name))
 
-    if found_path:
-        return tf.keras.models.load_model(found_path)
-
-    st.error("❌ Model file NOT found! Add trained_plant_disease_model.keras inside project.")
+    st.error("❌ Model file NOT found! Please add trained_plant_disease_model.keras")
     return None
 
 
@@ -40,65 +92,94 @@ model = load_model()
 # -----------------------------------------------------------
 def predict_image(path):
     img = tf.keras.preprocessing.image.load_img(path, target_size=(128, 128))
-    arr = tf.keras.preprocessing.image.img_to_array(img)
-    arr = np.expand_dims(arr, 0)
-    pred = model.predict(arr)
-    return np.argmax(pred)
+    arr = np.expand_dims(tf.keras.preprocessing.image.img_to_array(img), axis=0)
+    return np.argmax(model.predict(arr))
 
 
 # -----------------------------------------------------------
-# BASIC DISEASE INFO
+# HOME PAGE
 # -----------------------------------------------------------
-disease_info = {
-    "Apple___Apple_scab": {
-        "title": "Apple Scab (सफरचंद स्कॅब)",
-        "symptoms": "पानांवर काळपट डाग, फळे विकृत.",
-        "treat": "मॅन्कोझेब / क्लोरोथॅलोनील फवारणी.",
-        "prevent": "संक्रमित पाने जाळा."
-    },
-    "Tomato___Late_blight": {
-        "title": "Late Blight (लेट ब्लाईट)",
-        "symptoms": "पानांवर तपकिरी पाण्यासारखे डाग.",
-        "treat": "मेटालेक्सिल + मॅन्कोझेब फवारणी.",
-        "prevent": "जास्त आर्द्रता टाळा."
-    }
-}
+def home_page():
+
+    # HERO IMAGE
+    st.markdown("""
+    <div style="width:100%; display:flex; justify-content:center;">
+        <img src="https://i.ibb.co/3c2CZfL/plant-ai-banner.jpg"
+             style="width:100%; max-width:1100px; border-radius:18px; margin-top:10px;">
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h1 class='section-title'>AgriSens: Smart Disease Detection</h1>",
+                unsafe_allow_html=True)
+
+    st.markdown("""
+    <p style="text-align:center; max-width:800px; margin:auto; font-size:20px;">
+    Empowering Farmers with AI-Powered Plant Disease Recognition.<br>
+    Upload plant images to detect diseases accurately and access actionable insights.
+    </p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h2 class='section-title'>Features</h2>", unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown("""
+        <div class="feature-card">
+            <img src="https://i.ibb.co/Jc2kzjF/leaf-scan.jpg" width="100%" style="border-radius:10px;">
+            <div class="feature-title">Disease Detection</div>
+            <div class="feature-desc">Identify plant diseases using AI.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="feature-card">
+            <img src="https://i.ibb.co/ySmM1HG/farm-insight.jpg" width="100%" style="border-radius:10px;">
+            <div class="feature-title">Actionable Insights</div>
+            <div class="feature-desc">Get remedies and full disease details.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div class="feature-card">
+            <img src="https://i.ibb.co/tYJ4QCQ/realtime-detection.jpg" width="100%" style="border-radius:10px;">
+            <div class="feature-title">Real-Time Results</div>
+            <div class="feature-desc">Instant prediction using neural networks.</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<h2 class='section-title'>How It Works</h2>", unsafe_allow_html=True)
+
+    st.markdown("""
+    <ol style="font-size:22px; max-width:800px; margin:auto; color:#fff;">
+        <li>Select <b>Disease Recognition</b> from the sidebar.</li>
+        <li>Upload an image of the plant leaf.</li>
+        <li>Get instant AI-based disease results.</li>
+    </ol>
+    """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------
-# UI HEADER
+# DISEASE PAGE
 # -----------------------------------------------------------
-st.markdown("""
-<h1 style='color:#A259FF;text-align:center; font-weight:700;'>Agri🌾Next – स्मार्ट वनस्पती रोग निदान</h1>
-""", unsafe_allow_html=True)
-st.write("___")
+def disease_page():
 
+    st.title("🌱 Plant Disease Recognition")
 
-# -----------------------------------------------------------
-# FILE UPLOADER
-# -----------------------------------------------------------
-uploaded = st.file_uploader("📸 पानाचा फोटो अपलोड करा", type=["jpg", "jpeg", "png"])
+    uploaded = st.file_uploader("📸 Upload Leaf Image", type=["jpg", "jpeg", "png"])
 
-if uploaded:
+    if uploaded:
+        st.image(uploaded, use_column_width=True)
 
-    st.image(uploaded, use_column_width=True)
+        path = "temp.jpg"
+        with open(path, "wb") as f:
+            f.write(uploaded.getbuffer())
 
-    temp_path = "uploaded_temp.jpg"
-    with open(temp_path, "wb") as f:
-        f.write(uploaded.getbuffer())
+        if st.button("🔍 Identify Disease"):
 
-    if st.button("🔍 रोग ओळखा"):
-
-        loader = st.empty()
-        loader.markdown("<center><img src='https://i.gifer.com/ZZ5H.gif' width='120'></center>",
-                        unsafe_allow_html=True)
-
-        if model is None:
-            loader.empty()
-            st.error("❌ Model लोड झाला नाही!")
-
-        else:
-            idx = predict_image(temp_path)
+            idx = predict_image(path)
 
             class_list = [
                 'Apple___Apple_scab','Apple___Black_rot','Apple___Cedar_apple_rust','Apple___healthy',
@@ -118,46 +199,31 @@ if uploaded:
 
             predicted = class_list[idx]
 
-            loader.empty()
+            st.success(f"🌿 Disease Detected: **{predicted}**")
 
-            st.success(f"🌱 ओळखलेला रोग: **{predicted}**")
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, #6a11cb, #2575fc);
+                padding: 25px;
+                border-radius: 15px;
+                color: white;
+                margin-top: 20px;
+            ">
+                <h2 style="text-align:center;">🌿 Disease Report</h2>
+                <p style="font-size:20px;">Detected Class: <b>{predicted}</b></p>
+                <p>⚠ Full advisory content will display here.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-            # -----------------------------------------------------------
-            # BEAUTIFUL RESULT CARD
-            # -----------------------------------------------------------
-            if predicted in disease_info:
-                d = disease_info[predicted]
 
-                st.markdown(f"""
-                <div style="
-                    background: linear-gradient(135deg, #6a11cb, #2575fc);
-                    padding: 25px;
-                    border-radius: 15px;
-                    color: white;
-                    margin-top: 20px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                ">
-                    <h2 style="text-align:center; margin-bottom:10px;">🌿 {d['title']}</h2>
+# -----------------------------------------------------------
+# SIDEBAR NAVIGATION
+# -----------------------------------------------------------
+st.sidebar.title("📌 Navigation")
+page = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
 
-                    <p style="font-size:18px; line-height:1.6;">
-                        <b>🔍 लक्षणे:</b> {d['symptoms']} <br><br>
-                        <b>💊 उपचार:</b> {d['treat']} <br><br>
-                        <b>🛡 प्रतिबंध:</b> {d['prevent']}
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+if page == "Home":
+    home_page()
 
 else:
-    st.info("📥 कृपया फोटो अपलोड करा.")
-
-
-# -----------------------------------------------------------
-# FOOTER
-# -----------------------------------------------------------
-st.markdown("""
-<div style='background:#111;padding:35px;border-radius:12px;color:white;text-align:center;margin-top:50px;'>
-<h2 style='color:#A259FF;'>👥 Support by Agri🌾Next Team</h2>
-<p>AI आधारित स्मार्ट शेती प्लॅटफॉर्म</p>
-<p>Developer: Agri🌾Next</p>
-</div>
-""", unsafe_allow_html=True)
+    disease_page()
