@@ -65,4 +65,5 @@ def main():
         st.success(f"🌾 Recommended Crop: **{result}**")
 
 if __name__ == "__main__":
-    main() kaha dale 
+    main()
+
