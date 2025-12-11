@@ -30,12 +30,17 @@ st.markdown("""
 # -----------------------------------------------------------
 # SHOW HERO IMAGE
 # -----------------------------------------------------------
-if os.path.exists("Diseases.png"):
+
+
+# Absolute path for Diseases.png
+image_path = os.path.join(os.path.dirname(__file__), "Diseases.png")
+
+if os.path.exists(image_path):
     st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
-    st.image("Diseases.png", use_column_width=True)
+    st.image(image_path, use_column_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 else:
-    st.warning("⚠ Diseases.png फाइल सापडली नाही! कृपया कोड फोल्डरमध्ये ठेवा.")
+    st.warning(f"⚠ Diseases.png NOT found! Checked path: {image_path}")
 
 
 st.write("")  # spacing
@@ -199,6 +204,7 @@ st.markdown("""
 <p>Developer: Agri🌾Next</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
