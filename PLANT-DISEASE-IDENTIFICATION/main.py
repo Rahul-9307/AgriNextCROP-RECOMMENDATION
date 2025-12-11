@@ -35,7 +35,7 @@ if os.path.exists("Diseases.png"):
     st.image("Diseases.png", use_column_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 else:
-    st.warning("⚠ banner.jpg फाइल सापडली नाही! कृपया कोड फोल्डरमध्ये ठेवा.")
+    st.warning("⚠ Diseases.png फाइल सापडली नाही! कृपया कोड फोल्डरमध्ये ठेवा.")
 
 
 st.write("")  # spacing
@@ -199,5 +199,6 @@ st.markdown("""
 <p>Developer: Agri🌾Next</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
