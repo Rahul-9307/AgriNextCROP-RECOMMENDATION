@@ -4,86 +4,101 @@ import numpy as np
 import os
 from PIL import Image
 
-# ------------------------------
-# Load model (only once)
-# ------------------------------
-@st.experimental_singleton
+# -----------------------------------------------------------
+# LOAD MODEL (cached)
+# -----------------------------------------------------------
+@st.cache_resource
 def load_model():
+
     current_dir = os.path.dirname(__file__)
 
+    # Try .keras file
     model_path = os.path.join(current_dir, "trained_plant_disease_model.keras")
+
+    # Try .h5 if .keras not found
     if not os.path.exists(model_path):
         model_path = os.path.join(current_dir, "trained_plant_disease_model.h5")
 
+    # If still missing, return None
     if not os.path.exists(model_path):
         return None
 
     model = tf.keras.models.load_model(model_path)
     return model
 
+
 model = load_model()
 
 
-# ------------------------------
-# Prediction function
-# ------------------------------
+# -----------------------------------------------------------
+# PREDICT FUNCTION
+# -----------------------------------------------------------
 def predict_image(image_path):
     img = tf.keras.preprocessing.image.load_img(image_path, target_size=(128, 128))
-    array = tf.keras.preprocessing.image.img_to_array(img)
-    array = np.expand_dims(array, axis=0)
-    result = model.predict(array)
+    arr = tf.keras.preprocessing.image.img_to_array(img)
+    arr = np.expand_dims(arr, axis=0)
+    result = model.predict(arr)
     return np.argmax(result)
 
 
-# ------------------------------
-# Page Design
-# ------------------------------
-st.set_page_config(page_title="AgriSens Disease Prediction", layout="centered")
+# -----------------------------------------------------------
+# PAGE CONFIG
+# -----------------------------------------------------------
+st.set_page_config(page_title="AgriSens - Disease Detection", layout="centered")
+st.markdown("<h1 style='text-align:center; color:#2E8B57;'>🌾 SMART DISEASE DETECTION</h1>", unsafe_allow_html=True)
 
-# Sidebar
+
+# -----------------------------------------------------------
+# SIDEBAR
+# -----------------------------------------------------------
 st.sidebar.title("🌿 AgriSens")
-page = st.sidebar.radio("Go to", ["Home", "Disease Recognition"])
-
-# Header
-st.markdown("<h1 style='text-align:center; font-size:40px; color:#2E8B57;'>🌾 SMART DISEASE DETECTION</h1>", unsafe_allow_html=True)
+page = st.sidebar.radio("Navigate", ["Home", "Disease Recognition"])
 
 
-# Home Page
+# -----------------------------------------------------------
+# HOME PAGE
+# -----------------------------------------------------------
 if page == "Home":
     st.markdown("""
-        <div style='text-align:center'>
-            <p style='font-size:18px;'>
-                Welcome to **AgriSens Crop Disease Detection App**!  
-                Detect plant disease using AI — just upload an image.
-            </p>
+        <div style='text-align:center; font-size:18px;'>
+            Upload plant leaf images and detect disease using AI.<br>
+            A simple, fast and accurate detection system for farmers.
         </div>
     """, unsafe_allow_html=True)
 
+    image_path = os.path.join(os.path.dirname(__file__), "Diseases.png")
+    if os.path.exists(image_path):
+        st.image(image_path, use_column_width=True)
 
-# Disease Recognition Page
+
+# -----------------------------------------------------------
+# DISEASE RECOGNITION PAGE
+# -----------------------------------------------------------
 elif page == "Disease Recognition":
 
-    st.markdown("<h2 style='text-align:center; color:#6A5ACD;'>📸 Upload Plant Leaf Image</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#6A5ACD;'>📸 Upload Plant Leaf Image</h2>",
+                unsafe_allow_html=True)
 
-    uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+    uploaded = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
-    if uploaded_file:
-        # Display image
-        st.image(uploaded_file, caption="Selected Image", use_column_width=True)
+    if uploaded:
+        st.image(uploaded, use_column_width=True, caption="Uploaded Image")
+
+        # Save as temp file
+        temp_path = "temp_leaf.jpg"
+        with open(temp_path, "wb") as f:
+            f.write(uploaded.getbuffer())
 
         if st.button("🔍 Predict Disease"):
             if model is None:
-                st.error("❌ Model not found! Please upload model file in repo.")
+                st.error("❌ Model file missing in GitHub folder!")
             else:
-                # Save temp
-                temp_path = os.path.join(os.getcwd(), "temp_image.jpg")
-                with open(temp_path, "wb") as f:
-                    f.write(uploaded_file.getbuffer())
+                st.info("⏳ Analyzing image... Please wait...")
 
-                # Predict
-                result = predict_image(temp_path)
+                result_idx = predict_image(temp_path)
 
-                classes = [
+                # All classes
+                class_name = [
                     'Apple___Apple_scab', 'Apple___Black_rot',
                     'Apple___Cedar_apple_rust', 'Apple___healthy',
                     'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
@@ -108,4 +123,6 @@ elif page == "Disease Recognition":
                     'Tomato___Tomato_mosaic_virus', 'Tomato___healthy'
                 ]
 
-                st.markdown(f"<h3 style='text-align:center; color:#228B22;'>✅ Prediction: {classes[result]}</h3>", unsafe_allow_html=True)
+                st.success(f"🌱 **Disease Identified: {class_name[result_idx]}**")
+
+
