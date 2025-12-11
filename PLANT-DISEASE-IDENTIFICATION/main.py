@@ -14,48 +14,84 @@ st.set_page_config(page_title="AgriNext – स्मार्ट रोग न�
 # -----------------------------------------------------------
 st.markdown("""
 <style>
-h1, h2, h3, h4 { text-align:center; font-family:'Poppins', sans-serif; }
 
+h1, h2, h3, h4 {
+    text-align:center;
+    font-family:'Poppins', sans-serif;
+}
+
+/* Gradient Button */
 .gradient-btn {
     background: linear-gradient(90deg, #6A5ACD, #00B4D8);
     color: white;
-    padding: 12px 26px;
+    padding: 14px 26px;
     border-radius: 12px;
     text-align:center;
     font-size: 18px;
     width: 100%;
     border:none;
+    margin-top: 10px;
 }
 
+/* Card for results */
 .result-card {
     background: #ffffff;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
     text-align:center;
-    margin-top:20px;
+    margin-top:25px;
 }
 
+/* Upload Box */
 .upload-box {
     border: 2px dashed #6A5ACD;
     padding: 25px;
     border-radius: 15px;
+    text-align:center;
 }
 
-.footer-box {
-    background:#f2f2f2;
-    padding:20px;
-    border-radius:12px;
-    margin-top:40px;
-    font-size:15px;
+/* Footer Card (Dark Mode) */
+.footer-card {
+    background:#1a1a1a;
+    padding:30px;
+    border-radius:18px;
+    margin-top:50px;
+    color:white;
+    font-family:'Poppins', sans-serif;
+    box-shadow:0 4px 15px rgba(0,0,0,0.5);
 }
+
+.footer-title {
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    color:#A259FF;
+}
+
+.footer-text {
+    font-size:18px;
+    line-height:1.6;
+}
+
+.footer-bullets {
+    font-size:18px;
+    margin-top:10px;
+}
+
+.team-label {
+    font-size:20px;
+    font-weight:600;
+    margin-top:20px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 
 
 # -----------------------------------------------------------
-# MODEL LOAD FUNCTION (SAFE + NEW API)
+# MODEL LOADING
 # -----------------------------------------------------------
 @st.cache_resource
 def load_model():
@@ -73,13 +109,12 @@ def load_model():
     return None
 
 
-
 model = load_model()
 
 
 
 # -----------------------------------------------------------
-# PREDICTION FUNCTION
+# PREDICT FUNCTION
 # -----------------------------------------------------------
 def predict_image(image_path):
     img = tf.keras.preprocessing.image.load_img(image_path, target_size=(128,128))
@@ -93,15 +128,17 @@ def predict_image(image_path):
 # -----------------------------------------------------------
 # HEADER
 # -----------------------------------------------------------
-st.markdown("<h1>🌾 AgriNext – स्मार्ट वनस्पती रोग निदान</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#A259FF; font-weight:700;'>🌾 AgriNext – स्मार्ट वनस्पती रोग निदान</h1>", unsafe_allow_html=True)
 st.write("___")
 
 
+
 # -----------------------------------------------------------
-# FILE UPLOAD SECTION
+# FILE UPLOAD
 # -----------------------------------------------------------
 st.markdown("<h3>📸 कृपया पानाचा फोटो अपलोड करा</h3>", unsafe_allow_html=True)
-uploaded = st.file_uploader("", type=["jpg", "png", "jpeg"])
+
+uploaded = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
 
 if uploaded:
@@ -110,20 +147,19 @@ if uploaded:
     st.image(uploaded, use_column_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # save temporarily
+    # save image temporarily
     temp_path = "temp_input.jpg"
     with open(temp_path, "wb") as f:
         f.write(uploaded.getbuffer())
 
-    # Predict Button
-    if st.button("🔍 रोग ओळखा", key="predictbtn"):
-        
+    if st.button("🔍 रोग ओळखा", help="Click to Predict"):
+
         # Loader animation
-        loader_gif = "https://i.gifer.com/ZZ5H.gif"
-        st.markdown(f"<center><img src='{loader_gif}' width='140'></center>", unsafe_allow_html=True)
+        loader = "https://i.gifer.com/ZZ5H.gif"
+        st.markdown(f"<center><img src='{loader}' width='130'></center>", unsafe_allow_html=True)
 
         if model is None:
-            st.error("❌ मॉडेल फाइल मिळाली नाही! कृपया GitHub मध्ये फाइल योग्यरित्या अपलोड करा.")
+            st.error("❌ मॉडेल फाइल मिळाली नाही! कृपया GitHub मध्ये योग्य फाइल अपलोड करा.")
 
         else:
             idx = predict_image(temp_path)
@@ -153,7 +189,6 @@ if uploaded:
                 'Tomato___Tomato_mosaic_virus', 'Tomato___healthy'
             ]
 
-            # Result Card
             st.markdown("<div class='result-card'>", unsafe_allow_html=True)
             st.markdown("<h3>🌱 ओळखलेला रोग</h3>", unsafe_allow_html=True)
             st.markdown(f"<h2 style='color:#2E8B57;'>✅ {class_name[idx]}</h2>", unsafe_allow_html=True)
@@ -163,25 +198,31 @@ else:
     st.info("📥 फोटो अपलोड करा.")
 
 
+
 # -----------------------------------------------------------
-# FOOTER – AGRINEXT TEAM
+# FOOTER – AGRINEXT TEAM (Dark Visible Version)
 # -----------------------------------------------------------
 st.markdown("""
-<div class='footer-box'>
-<h3>👥 AgriNext Team</h3>
-<p>
-AgriNext हे शेतकऱ्यांसाठी अत्याधुनिक तंत्रज्ञान वापरून तयार केलेले प्लॅटफॉर्म आहे.  
-आमचे ध्येय –  
-<strong>“प्रत्येक शेतकऱ्याला स्मार्ट शेतीची सुविधा देणे.”</strong><br><br>
+<div class='footer-card'>
+    <div class='footer-title'>👥 AgriNext Team</div>
 
-🔸 AI आधारित रोग निदान  
-🔸 पिक सल्ला  
-🔸 स्थानिक भाषेत मार्गदर्शन  
-🔸 शेत पातळीवरील निर्णय सहाय्य  
+    <div class='footer-text'>
+        AgriNext हे शेतकऱ्यांसाठी अत्याधुनिक तंत्रज्ञान वापरुन विकसित केलेले स्मार्ट प्लॅटफॉर्म आहे.
+        आमचे ध्येय — <strong>“प्रत्येक शेतकऱ्याला स्मार्ट शेतीची सुविधा देणे.”</strong>
+    </div>
 
-<br><b>टीम:</b><br>
-• Rahul Patil (Developer)<br>
-• AgriNext Research & Advisory Team
-</p>
+    <div class='footer-bullets'>
+        🔹 AI आधारित रोग निदान <br>
+        🔹 पिक सल्ला <br>
+        🔹 स्थानिक भाषेत मार्गदर्शन <br>
+        🔹 शेत पातळीवरील निर्णय सहाय्य <br>
+    </div>
+
+    <div class='team-label'>टीम:</div>
+    <div class='footer-text'>
+        • Rahul Patil (Developer) <br>
+        • AgriNext Research & Advisory Team
+    </div>
+
 </div>
 """, unsafe_allow_html=True)
