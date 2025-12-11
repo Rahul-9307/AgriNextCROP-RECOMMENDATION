@@ -63,33 +63,30 @@ if page == "🏠 Home":
 
     st.write("## Features")
 
-    # Feature Card Images
-    img1 = "img_realtime.png"
-    img2 = "img_insights.png"
-    img3 = "img_detection.png"
+       st.write("## Features")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.image(img1, use_column_width=True)
+        st.image(Real-Time Results.png, use_column_width=True)
         st.markdown("<p class='center-text'><b>Real-Time Results</b></p>", unsafe_allow_html=True)
-        st.write("Receive instant predictions.")
+        st.write("Instant predictions with fast AI processing.")
 
     with col2:
-        st.image(img2, use_column_width=True)
+        st.image(IMG_INSIGHTS, use_column_width=True)
         st.markdown("<p class='center-text'><b>Actionable Insights</b></p>", unsafe_allow_html=True)
-        st.write("Get detailed insights and remedies.")
+        st.write("Know disease details and recommended solutions.")
 
     with col3:
-        st.image(img3, use_column_width=True)
+        st.image(IMG_DETECTION, use_column_width=True)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
-        st.write("Identify plant diseases with AI.")
+        st.write("AI-powered identification of plant diseases.")
 
     st.write("## How It Works")
     st.markdown("""
-    1. Go to the **Disease Recognition** page.<br>
-    2. Upload an image of the affected leaf.<br>
-    3. Instantly receive disease detection and solution advice.
+    1. Select the **Disease Recognition** page.<br>
+    2. Upload an image of the affected plant leaf.<br>
+    3. Get instant detection and disease information.<br>
     """, unsafe_allow_html=True)
 
 
@@ -155,3 +152,4 @@ st.markdown("""
 Developed by <b>Team AgriSens</b> | Powered by Streamlit
 </div>
 """, unsafe_allow_html=True)
+
