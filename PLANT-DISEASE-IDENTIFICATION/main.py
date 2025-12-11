@@ -117,9 +117,7 @@ def load_model():
 
     st.write("🔍 Searching Model...")
 
-    if found_path:
-        st.success(f"✅ Model Found: {found_path}")
-        return tf.keras.models.load_model(found_path)
+    if found_path: st.success(f"✅ Model Found at: {found_path}") return tf.keras.models.load_model(found_path)
 
     st.error("❌ Model NOT FOUND! Upload trained_plant_disease_model.keras in repo.")
     return None
@@ -213,3 +211,4 @@ st.markdown("""
 Developed by <b>Team AgriSens</b> | Powered by Streamlit
 </div>
 """, unsafe_allow_html=True)
+
