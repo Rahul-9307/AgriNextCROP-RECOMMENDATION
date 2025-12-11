@@ -9,6 +9,7 @@ from PIL import Image
 # -----------------------------------------------------------
 st.set_page_config(page_title="Agri🌾Next", layout="wide")
 
+
 # -----------------------------------------------------------
 # RAW IMAGE LINKS
 # -----------------------------------------------------------
@@ -17,6 +18,7 @@ HERO_IMAGE = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMEN
 IMG_REALTIME = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Real-Time%20Results.png"
 IMG_INSIGHTS = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Actionable%20Insights.png"
 IMG_DETECTION = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Disease%20Detection.png"
+
 
 # -----------------------------------------------------------
 # HERO CSS
@@ -35,12 +37,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 # -----------------------------------------------------------
 # HERO IMAGE
 # -----------------------------------------------------------
 st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
 st.image(HERO_IMAGE, use_column_width=True)
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 # -----------------------------------------------------------
 # PAGE SELECTOR
@@ -49,8 +53,9 @@ col = st.columns(3)
 with col[1]:
     page = st.selectbox("Select a Page", ["HOME", "DISEASE RECOGNITION"])
 
+
 # -----------------------------------------------------------
-# CLASS LABELS — MUST MATCH YOUR TRAINING ORDER
+# CLASS LABELS
 # -----------------------------------------------------------
 CLASS_NAMES = [
     "Apple___Apple_scab", "Apple___Black_rot", "Apple___Cedar_apple_rust", "Apple___healthy",
@@ -73,8 +78,9 @@ CLASS_NAMES = [
     "Tomato___Tomato_mosaic_virus", "Tomato___healthy"
 ]
 
+
 # -----------------------------------------------------------
-# AUTO MODEL LOADER (ERROR-FREE)
+# UNIVERSAL MODEL LOADER (WORKING)
 # -----------------------------------------------------------
 @st.cache_resource
 def load_model():
@@ -86,13 +92,19 @@ def load_model():
             found_path = os.path.join(root, target_name)
             break
 
-   
+    if found_path:
+        st.success(f"✅ Model Loaded From: {found_path}")
+        return tf.keras.models.load_model(found_path)
+
+    st.error("❌ Model not found! Upload trained_plant_disease_model.keras")
+    return None
 
 
 model = load_model()
 
+
 # -----------------------------------------------------------
-# PREDICTION FUNCTION (FINAL + FIXED)
+# PREDICT FUNCTION
 # -----------------------------------------------------------
 def predict_image(path):
     img = tf.keras.preprocessing.image.load_img(path, target_size=(128, 128))
@@ -100,35 +112,46 @@ def predict_image(path):
 
     pred = model.predict(arr)
     idx = np.argmax(pred)
-    conf = np.max(pred)
+    confidence = float(np.max(pred))
 
-    return idx, CLASS_NAMES[idx], float(conf)
+    return idx, CLASS_NAMES[idx], confidence
+
 
 # -----------------------------------------------------------
 # HOME PAGE
 # -----------------------------------------------------------
 if page == "HOME":
+
     st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agri🌾Next: Smart Disease Detection</h1>
-    <p class='center-text' style='color:#ccc; font-size:18px;'>
-        AI-powered platform for accurate plant disease recognition.
+    <h1 class='center-text' style='color:#2ecc71;'>Agri🌾Next — Smart Disease Detection</h1>
+    <p class='center-text' style='color:#ddd;font-size:18px;'>
+        AI-powered platform for detecting plant leaf diseases instantly.
     </p>
     """, unsafe_allow_html=True)
 
+    # Features
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.image(IMG_REALTIME, use_column_width=True)
+        st.image(IMG_REALTIME)
         st.markdown("<p class='center-text'><b>Real-Time Results</b></p>", unsafe_allow_html=True)
 
     with col2:
-        st.image(IMG_INSIGHTS, use_column_width=True)
+        st.image(IMG_INSIGHTS)
         st.markdown("<p class='center-text'><b>Actionable Insights</b></p>", unsafe_allow_html=True)
 
     with col3:
-        st.image(IMG_DETECTION, use_column_width=True)
+        st.image(IMG_DETECTION)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
 
+    # How It Works
+    st.write("## How It Works")
+
+    st.markdown("""
+    1. Navigate to the **Disease Recognition** page.  
+    2. Upload an image of the affected plant leaf.  
+    3. Get instant results along with disease confidence score.  
+    """)
 
 
 # -----------------------------------------------------------
@@ -136,41 +159,34 @@ if page == "HOME":
 # -----------------------------------------------------------
 elif page == "DISEASE RECOGNITION":
 
-    st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71;'>🌿 Disease Recognition</h1>
-    <p class='center-text' style='color:#bbb;'>Upload a plant leaf image to detect disease.</p>
-    """, unsafe_allow_html=True)
-
+    st.header("🌿 Disease Recognition")
     uploaded = st.file_uploader("📸 Upload Leaf Image", type=["jpg", "jpeg", "png"])
 
     if uploaded:
         st.image(uploaded, use_column_width=True)
 
-        temp_path = "uploaded_temp.jpg"
+        temp_path = "temp_leaf.jpg"
         with open(temp_path, "wb") as f:
             f.write(uploaded.getbuffer())
 
-        if st.button("🔍 Detect Disease"):
+        if st.button("🔍 Predict Disease"):
 
             if model is None:
                 st.error("❌ Model not loaded!")
             else:
-                st.info("⏳ Processing... Please wait")
+                st.info("⏳ Processing...")
+
                 idx, disease, conf = predict_image(temp_path)
 
                 st.success(f"🌱 Predicted Disease: **{disease}**")
                 st.info(f"📊 Confidence: **{conf*100:.2f}%**")
 
+
 # -----------------------------------------------------------
 # FOOTER
 # -----------------------------------------------------------
 st.markdown("""
-<div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team Agri🌾Next</b> 
+<div style='text-align:center;color:gray;margin-top:30px;'>
+Developed by <b>Agri🌾Next Team</b>
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
