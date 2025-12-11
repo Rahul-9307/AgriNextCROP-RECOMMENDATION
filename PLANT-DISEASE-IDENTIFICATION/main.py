@@ -109,7 +109,7 @@ def predict_image(path):
 # -----------------------------------------------------------
 if page == "HOME":
     st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>AgriSens: Smart Disease Detection</h1>
+    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agri🌾Next: Smart Disease Detection</h1>
     <p class='center-text' style='color:#ccc; font-size:18px;'>
         AI-powered platform for accurate plant disease recognition.
     </p>
@@ -128,6 +128,14 @@ if page == "HOME":
     with col3:
         st.image(IMG_DETECTION, use_column_width=True)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
+
+
+ st.write("## How It Works")
+    st.markdown("""
+    1. Select **Disease Recognition** page.<br>
+    2. Upload a leaf image.<br>
+    3. Get instant prediction and insights.<br>
+    """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------
 # DISEASE RECOGNITION PAGE
@@ -167,6 +175,7 @@ st.markdown("""
 Developed by <b>Team Agri🌾Next</b> 
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
