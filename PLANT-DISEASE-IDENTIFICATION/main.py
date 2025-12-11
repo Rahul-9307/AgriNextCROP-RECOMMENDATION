@@ -164,8 +164,9 @@ elif page == "DISEASE RECOGNITION":
 # -----------------------------------------------------------
 st.markdown("""
 <div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit
+Developed by <b>Team Agri🌾Next</b> 
 </div>
 """, unsafe_allow_html=True)
+
 
 
