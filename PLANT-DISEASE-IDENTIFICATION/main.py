@@ -1,4 +1,4 @@
-mera project pr sabhi center kare aur small kare import streamlit as st
+import streamlit as st
 import os
 import tensorflow as tf
 import numpy as np
@@ -178,3 +178,4 @@ Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit
 
 
   
+
