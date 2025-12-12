@@ -153,6 +153,20 @@ if page == "HOME":
         st.image(IMG_DETECTION, width=220)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
 
+
+    # HOW IT WORKS SECTION (AT BOTTOM OF HOME PAGE)
+    st.markdown("""
+    <h2 style='text-align:center; margin-top:35px;'>How It Works 🔍</h2>
+    <div style='max-width:700px; margin:auto; font-size:17px; line-height:1.6;'>
+        <ol>
+            <li>Navigate to the <b>"Disease Recognition"</b> page.</li>
+            <li>Upload an image of the affected plant.</li>
+            <li>Get instant results along with disease information.</li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # -----------------------------------------------------------
 # DISEASE RECOGNITION PAGE (compact)
 # -----------------------------------------------------------
@@ -194,6 +208,7 @@ elif page == "DISEASE RECOGNITION":
 # FOOTER (compact)
 # -----------------------------------------------------------
 st.markdown("<div class='app-footer'>Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit</div>", unsafe_allow_html=True)
+
 
 
 
