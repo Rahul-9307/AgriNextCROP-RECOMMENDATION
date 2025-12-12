@@ -5,9 +5,9 @@ import numpy as np
 from PIL import Image
 
 # -----------------------------------------------------------
-# PAGE CONFIG
+# PAGE CONFIG (centered & compact)
 # -----------------------------------------------------------
-st.set_page_config(page_title="Agri🌾Next", layout="wide")
+st.set_page_config(page_title="Agri🌾Next", layout="centered")
 
 # -----------------------------------------------------------
 # RAW IMAGE LINKS
@@ -19,34 +19,66 @@ IMG_INSIGHTS = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMM
 IMG_DETECTION = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOMMENDATION/main/PLANT-DISEASE-IDENTIFICATION/Disease%20Detection.png"
 
 # -----------------------------------------------------------
-# HERO CSS
+# COMPACT / CENTERED CSS
 # -----------------------------------------------------------
 st.markdown("""
 <style>
+/* overall center + compact spacing */
+.block-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    max-width: 900px;  /* keep page narrow and centered */
+}
+
+/* hero box */
 .hero-box {
     width: 100%;
-    border-radius: 18px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 2px solid #2ecc71;
-    margin-top: 10px;
-    box-shadow: 0px 0px 15px rgba(0,255,150,0.25);
+    border: 1px solid #2ecc71;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 8px rgba(0,0,0,0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
 }
-.center-text { text-align:center; }
+
+/* center small text blocks */
+.center-text { text-align:center; margin:0; padding:0; }
+
+/* reduce spacing for columns and widgets */
+.streamlit-expanderHeader, .stMarkdown, .stButton {
+    margin: 0;
+    padding: 0;
+}
+
+.small-img-container img {
+    max-width: 260px;  /* fallback when using raw <img> */
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* compact footer */
+.app-footer {
+    background:#111; padding:10px; border-radius:8px; margin-top:18px; color:white; text-align:center; font-size:13px;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# HERO IMAGE
+# HERO IMAGE (centered & smaller)
 # -----------------------------------------------------------
 st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
-st.image(HERO_IMAGE, use_column_width=True)
+# smaller hero width to make page compact and centered
+st.image(HERO_IMAGE, width=520)
 st.markdown("</div>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# PAGE SELECTOR
+# PAGE SELECTOR (centered)
 # -----------------------------------------------------------
-col = st.columns(3)
-with col[1]:
+cols = st.columns([1, 2, 1])
+with cols[1]:
     page = st.selectbox("Select a Page", ["HOME", "DISEASE RECOGNITION"])
 
 # -----------------------------------------------------------
@@ -73,7 +105,6 @@ CLASS_NAMES = [
     "Tomato___Tomato_mosaic_virus", "Tomato___healthy"
 ]
 
-
 # -----------------------------------------------------------
 # AUTO MODEL LOADER (ERROR-FREE)
 # -----------------------------------------------------------
@@ -87,7 +118,8 @@ def load_model():
             found_path = os.path.join(root, target_name)
             break
 
-    st.write("🔍 Searching for model...")
+    # small inline status text (center)
+    st.markdown("<p class='center-text' style='color:#9dbfa8; font-size:13px;'>🔍 Searching for model... (compact)</p>", unsafe_allow_html=True)
 
     if found_path:
         st.success(f"✅ Model Found at: {found_path}")
@@ -96,86 +128,78 @@ def load_model():
     st.error("❌ Model NOT FOUND! Upload trained_plant_disease_model.keras in your repo.")
     return None
 
-
 model = load_model()
+
 # -----------------------------------------------------------
-# PREDICTION FUNCTION (FINAL + FIXED)
+# PREDICTION FUNCTION
 # -----------------------------------------------------------
 def predict_image(path):
     img = tf.keras.preprocessing.image.load_img(path, target_size=(128, 128))
     arr = np.expand_dims(tf.keras.preprocessing.image.img_to_array(img) / 255.0, 0)
-
     pred = model.predict(arr)
     idx = np.argmax(pred)
     conf = np.max(pred)
-
     return idx, CLASS_NAMES[idx], float(conf)
 
 # -----------------------------------------------------------
 # HOME PAGE
 # -----------------------------------------------------------
 if page == "HOME":
-    st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agri🌾Next: Smart Disease Detection</h1>
-    <p class='center-text' style='color:#ccc; font-size:18px;'>
-        AI-powered platform for accurate plant disease recognition.
-    </p>
-    """, unsafe_allow_html=True)
+    st.markdown("<h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agri🌾Next: Smart Disease Detection</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='center-text' style='color:#9aa; font-size:15px;'>AI-powered platform for accurate plant disease recognition.</p>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.image(IMG_REALTIME, use_column_width=True)
+    c1, c2, c3 = st.columns(3)
+    # smaller thumbnails to keep the UI compact and centered
+    with c1:
+        st.image(IMG_REALTIME, width=220)
         st.markdown("<p class='center-text'><b>Real-Time Results</b></p>", unsafe_allow_html=True)
 
-    with col2:
-        st.image(IMG_INSIGHTS, use_column_width=True)
+    with c2:
+        st.image(IMG_INSIGHTS, width=220)
         st.markdown("<p class='center-text'><b>Actionable Insights</b></p>", unsafe_allow_html=True)
 
-    with col3:
-        st.image(IMG_DETECTION, use_column_width=True)
+    with c3:
+        st.image(IMG_DETECTION, width=220)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# DISEASE RECOGNITION PAGE
+# DISEASE RECOGNITION PAGE (compact)
 # -----------------------------------------------------------
 elif page == "DISEASE RECOGNITION":
+    st.markdown("<h2 class='center-text' style='color:#2ecc71;'>🌿 Disease Recognition</h2>", unsafe_allow_html=True)
+    st.markdown("<p class='center-text' style='color:#9aa;'>Upload a plant leaf image to detect disease.</p>", unsafe_allow_html=True)
 
-    st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71;'>🌿 Disease Recognition</h1>
-    <p class='center-text' style='color:#bbb;'>Upload a plant leaf image to detect disease.</p>
-    """, unsafe_allow_html=True)
-
-    uploaded = st.file_uploader("📸 Upload Leaf Image", type=["jpg", "jpeg", "png"])
+    # center uploader by placing it in a middle column
+    a, b, c = st.columns([1, 2, 1])
+    with b:
+        uploaded = st.file_uploader("", type=["jpg", "jpeg", "png"], help="Upload clear leaf image (centered & compact)")
 
     if uploaded:
-        st.image(uploaded, use_column_width=True)
-
+        # show a smaller preview (width fixed)
+        st.image(uploaded, width=360)
         temp_path = "uploaded_temp.jpg"
         with open(temp_path, "wb") as f:
             f.write(uploaded.getbuffer())
 
-        if st.button("🔍 Detect Disease"):
+        # center the button
+        btn_cols = st.columns([1, 2, 1])
+        with btn_cols[1]:
+            if st.button("🔍 Detect Disease"):
+                if model is None:
+                    st.error("❌ Model not loaded!")
+                else:
+                    st.info("🔮 Predict by AgriNext Team")
+                    idx, disease, conf = predict_image(temp_path)
 
-            if model is None:
-                st.error("❌ Model not loaded!")
-            else:
-                st.info("🔮 Predict by AgriNext Team")
-                idx, disease, conf = predict_image(temp_path)
-
-                st.success(f"🌱 Predicted Disease: **{disease}**")
-                st.info(f"📊 Confidence: **{conf*100:.2f}%**")
+                    # compact result card
+                    st.markdown(f"""
+                    <div style='border:1px solid #2ecc71; padding:12px; border-radius:10px; max-width:520px; margin:10px auto; text-align:center;'>
+                        <h3 style='margin:4px 0; color:#2ecc71;'>🌱 Predicted: <b>{disease}</b></h3>
+                        <p style='margin:2px 0; color:#aaa;'>Confidence: <b>{conf*100:.2f}%</b></p>
+                    </div>
+                    """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------
-# FOOTER
+# FOOTER (compact)
 # -----------------------------------------------------------
-st.markdown("""
-<div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit
-</div>
-""", unsafe_allow_html=True)
-
-
-
-  
-
+st.markdown("<div class='app-footer'>Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit</div>", unsafe_allow_html=True)
