@@ -23,45 +23,34 @@ IMG_DETECTION = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOM
 # -----------------------------------------------------------
 st.markdown("""
 <style>
-/* overall center + compact spacing */
+
 .block-container {
+    max-width: 900px;
     padding-top: 10px;
-    padding-bottom: 10px;
-    max-width: 900px;  /* keep page narrow and centered */
 }
 
-/* hero box */
-.hero-box {
-    width: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #2ecc71;
-    margin-top: 6px;
-    margin-bottom: 10px;
-    box-shadow: 0px 0px 8px rgba(0,0,0,0.08);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+/* HERO IMAGE CONTAINER */
+.hero-wrapper {
+    display: flex;
+    justify-content: center;
+}
+.hero-img {
+    width: 95%;
+    border-radius: 16px;
+    border: 2px solid #2ecc71;
+    box-shadow: 0px 0px 10px rgba(0,255,140,0.20);
 }
 
-/* center small text blocks */
-.center-text { text-align:center; margin:0; padding:0; }
+.center-text { text-align: center; }
 
-/* reduce spacing for columns and widgets */
-.streamlit-expanderHeader, .stMarkdown, .stButton {
-    margin: 0;
-    padding: 0;
-}
-
-.small-img-container img {
-    max-width: 260px;  /* fallback when using raw <img> */
-    height: auto;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* compact footer */
 .app-footer {
-    background:#111; padding:10px; border-radius:8px; margin-top:18px; color:white; text-align:center; font-size:13px;
+    background:#111;
+    padding:10px;
+    border-radius:8px;
+    margin-top:20px;
+    text-align:center;
+    font-size:13px;
+    color:white;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -203,4 +192,5 @@ elif page == "DISEASE RECOGNITION":
 # FOOTER (compact)
 # -----------------------------------------------------------
 st.markdown("<div class='app-footer'>Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit</div>", unsafe_allow_html=True)
+
 
