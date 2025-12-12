@@ -174,40 +174,50 @@ elif page == "DISEASE RECOGNITION":
     st.markdown("<h2 class='center-text' style='color:#2ecc71;'>🌿 Disease Recognition</h2>", unsafe_allow_html=True)
     st.markdown("<p class='center-text' style='color:#9aa;'>Upload a plant leaf image to detect disease.</p>", unsafe_allow_html=True)
 
-    # center uploader by placing it in a middle column
-    a, b, c = st.columns([1, 2, 1])
-    with b:
-        uploaded = st.file_uploader("", type=["jpg", "jpeg", "png"], help="Upload clear leaf image (centered & compact)")
+    # Centered uploader
+    col_up1, col_up2, col_up3 = st.columns([1, 2, 1])
+    with col_up2:
+        uploaded = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
     if uploaded:
-        # show a smaller preview (width fixed)
-        st.image(uploaded, width=407)
+
+        # 🔥 PERFECT CENTER IMAGE
+        img_left, img_center, img_right = st.columns([1, 2, 1])
+        with img_center:
+            st.image(uploaded, width=420)
+
+        # Save temp file
         temp_path = "uploaded_temp.jpg"
         with open(temp_path, "wb") as f:
             f.write(uploaded.getbuffer())
 
-        # center the button
-        btn_cols = st.columns([1, 2, 1])
-        with btn_cols[1]:
-            if st.button("🔍 Detect Disease"):
-                if model is None:
-                    st.error("❌ Model not loaded!")
-                else:
-                    st.info("🔮 Predict by AgriNext Team")
-                    idx, disease, conf = predict_image(temp_path)
+        # 🔥 PERFECT CENTER BUTTON
+        btn_left, btn_center, btn_right = st.columns([1, 1, 1])
+        with btn_center:
+            detect = st.button("🔍 Detect Disease")
 
-                    # compact result card
-                    st.markdown(f"""
-                    <div style='border:1px solid #2ecc71; padding:12px; border-radius:10px; max-width:520px; margin:10px auto; text-align:center;'>
-                        <h3 style='margin:4px 0; color:#2ecc71;'>🌱 Predicted: <b>{disease}</b></h3>
-                        <p style='margin:2px 0; color:#aaa;'>Confidence: <b>{conf*100:.2f}%</b></p>
-                    </div>
-                    """, unsafe_allow_html=True)
+        if detect:
+            if model is None:
+                st.error("❌ Model not loaded!")
+            else:
+                st.info("🔮 Predict by AgriNext Team")
+                idx, disease, conf = predict_image(temp_path)
+
+                # 🔥 Center result card
+                st.markdown(f"""
+                <div style='border:1px solid #2ecc71; padding:12px; border-radius:10px;
+                max-width:450px; margin:auto; text-align:center;'>
+                    <h3 style='color:#2ecc71;'>🌱 Predicted: <b>{disease}</b></h3>
+                    <p style='color:#ccc;'>Confidence: <b>{conf*100:.2f}%</b></p>
+                </div>
+                """, unsafe_allow_html=True)
+
 
 # -----------------------------------------------------------
 # FOOTER (compact)
 # -----------------------------------------------------------
 st.markdown("<div class='app-footer'>Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit</div>", unsafe_allow_html=True)
+
 
 
 
