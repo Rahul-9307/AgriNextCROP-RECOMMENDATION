@@ -7,7 +7,7 @@ from PIL import Image
 # -----------------------------------------------------------
 # PAGE CONFIG
 # -----------------------------------------------------------
-st.set_page_config(page_title="AgriSens", layout="wide")
+st.set_page_config(page_title="Agrii🌾Next", layout="wide")
 
 # -----------------------------------------------------------
 # RAW IMAGE LINKS
@@ -116,7 +116,7 @@ def predict_image(path):
 # -----------------------------------------------------------
 if page == "HOME":
     st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>AgriSens: Smart Disease Detection</h1>
+    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agrii🌾Next: Smart Disease Detection</h1>
     <p class='center-text' style='color:#ccc; font-size:18px;'>
         AI-powered platform for accurate plant disease recognition.
     </p>
@@ -171,6 +171,7 @@ elif page == "DISEASE RECOGNITION":
 # -----------------------------------------------------------
 st.markdown("""
 <div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team AgriSens</b> | Powered by Streamlit
+Developed by <b>Team Agrii🌾Next</b> | Powered by Streamlit
 </div>
 """, unsafe_allow_html=True)
+
