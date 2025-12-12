@@ -7,7 +7,7 @@ from PIL import Image
 # -----------------------------------------------------------
 # PAGE CONFIG
 # -----------------------------------------------------------
-st.set_page_config(page_title="Agri🌾Next", layout="wide")
+st.set_page_config(page_title="Agri🌾Sens", layout="wide")
 
 # -----------------------------------------------------------
 # RAW IMAGE LINKS
@@ -20,39 +20,43 @@ IMG_DETECTION = "https://raw.githubusercontent.com/Rahul-9307/AgriNextCROP-RECOM
 
 
 # -----------------------------------------------------------
-# GLOBAL UI CSS — Everything Center + Smaller Layout
+# GLOBAL UI CSS — Same as Streamlit Cloud Clean UI
 # -----------------------------------------------------------
 st.markdown("""
 <style>
 
-html, body, [class*="css"]  {
+body {
     font-family: "Poppins", sans-serif;
 }
 
-.hero-box {
-    width: 80%;
+.hero-box img {
+    width: 70% !important;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 2px solid #2ecc71;
-    margin-top: 20px;
-    box-shadow: 0px 0px 15px rgba(0,255,150,0.25);
-}
-
-.center-text { 
-    text-align:center; 
-}
-
-.small-img img {
-    width: 90% !important;
-    margin: auto;
     display: block;
+    border-radius: 15px;
+    border: 2px solid #2ecc71;
 }
 
-.selectbox-center > div {
+.center-text {
+    text-align: center;
+}
+
+select, .stSelectbox {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.small-card img {
+    width: 90% !important;
+    border-radius: 10px;
+    display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.stSelectbox > div {
+    margin: auto;
     width: 40%;
 }
 
@@ -61,17 +65,17 @@ html, body, [class*="css"]  {
 
 
 # -----------------------------------------------------------
-# HERO IMAGE
+# HERO IMAGE (center)
 # -----------------------------------------------------------
 st.markdown("<div class='hero-box'>", unsafe_allow_html=True)
-st.image(HERO_IMAGE, use_column_width=True)
+st.image(HERO_IMAGE)
 st.markdown("</div>", unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------
-# PAGE SELECTOR (Centered)
+# PAGE SELECTOR (center)
 # -----------------------------------------------------------
-st.markdown("<div class='selectbox-center'>", unsafe_allow_html=True)
+st.markdown("<div style='width:40%; margin:auto;'>", unsafe_allow_html=True)
 page = st.selectbox("Select a Page", ["HOME", "DISEASE RECOGNITION"])
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -107,16 +111,11 @@ CLASS_NAMES = [
 @st.cache_resource
 def load_model():
     target_name = "trained_plant_disease_model.keras"
-    found_path = None
-
     for root, dirs, files in os.walk(".", topdown=True):
         if target_name in files:
-            found_path = os.path.join(root, target_name)
-            break
-
-    if found_path:
-        st.success(f"✅ Model Loaded: {found_path}")
-        return tf.keras.models.load_model(found_path)
+            path = os.path.join(root, target_name)
+            st.success(f"✅ Model Loaded: {path}")
+            return tf.keras.models.load_model(path)
 
     st.error("❌ Model NOT FOUND — Upload trained_plant_disease_model.keras")
     return None
@@ -131,49 +130,47 @@ model = load_model()
 def predict_image(path):
     img = tf.keras.preprocessing.image.load_img(path, target_size=(128, 128))
     arr = np.expand_dims(tf.keras.preprocessing.image.img_to_array(img) / 255.0, 0)
-
     pred = model.predict(arr)
     idx = np.argmax(pred)
     conf = np.max(pred)
-
     return idx, CLASS_NAMES[idx], float(conf)
 
 
 # -----------------------------------------------------------
-# HOME PAGE UI
+# HOME PAGE
 # -----------------------------------------------------------
 if page == "HOME":
 
     st.markdown("""
-    <h1 class='center-text' style='color:#2ecc71; font-weight:800;'>Agri🌾Next: Smart Disease Detection</h1>
-    <p class='center-text' style='color:#ccc; font-size:18px;'>
-        AI-powered platform for accurate plant disease recognition.
+    <h1 class='center-text' style='color:#2ecc71;'>AgriSens: Smart Disease Detection</h1>
+    <p class='center-text' style='color:#ccc; font-size:17px;'>
+        Empowering Farmers with AI-Powered Plant Disease Recognition.
     </p>
     """, unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3, gap="medium")
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown("<div class='small-img'>", unsafe_allow_html=True)
+        st.markdown("<div class='small-card'>", unsafe_allow_html=True)
         st.image(IMG_REALTIME)
         st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("<p class='center-text'><b>Real-Time Results</b></p>", unsafe_allow_html=True)
 
     with col2:
-        st.markdown("<div class='small-img'>", unsafe_allow_html=True)
+        st.markdown("<div class='small-card'>", unsafe_allow_html=True)
         st.image(IMG_INSIGHTS)
         st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("<p class='center-text'><b>Actionable Insights</b></p>", unsafe_allow_html=True)
 
     with col3:
-        st.markdown("<div class='small-img'>", unsafe_allow_html=True)
+        st.markdown("<div class='small-card'>", unsafe_allow_html=True)
         st.image(IMG_DETECTION)
         st.markdown("</div>", unsafe_allow_html=True)
         st.markdown("<p class='center-text'><b>Disease Detection</b></p>", unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------
-# DISEASE RECOGNITION
+# DISEASE RECOGNITION PAGE
 # -----------------------------------------------------------
 elif page == "DISEASE RECOGNITION":
 
@@ -196,9 +193,7 @@ elif page == "DISEASE RECOGNITION":
             if model is None:
                 st.error("❌ Model not loaded!")
             else:
-                st.info("🔮 Predict by AgriNext Team")
                 idx, disease, conf = predict_image(temp_path)
-
                 st.success(f"🌱 Predicted Disease: **{disease}**")
                 st.info(f"📊 Confidence: **{conf*100:.2f}%**")
 
@@ -207,7 +202,7 @@ elif page == "DISEASE RECOGNITION":
 # FOOTER
 # -----------------------------------------------------------
 st.markdown("""
-<div style='background:#111; padding:15px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
-Developed by <b>Team Agri🌾Next</b> | Powered by Streamlit
+<div style='background:#111; padding:12px; border-radius:10px; margin-top:40px; color:white; text-align:center;'>
+Developed by <b>Team Agri🌾Sens</b> | Powered by Streamlit
 </div>
 """, unsafe_allow_html=True)
