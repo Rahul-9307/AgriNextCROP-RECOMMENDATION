@@ -152,29 +152,23 @@ st.markdown("---")
 st.markdown(
     """
     <style>
-    /* Main background */
-    .stApp {
-        background-color: #ffffff;
+    .agrifooter {
+        text-align: center;
+        padding: 18px;
+        font-size: 14px;
+        color: #888;
     }
-
-    /* Sidebar (agar ho) */
-    section[data-testid="stSidebar"] {
-        background-color: #ffffff;
+    .agrifooter span {
+        color: #2ecc71;
+        font-weight: 600;
     }
-
-    /* Tabs background */
-    div[data-baseweb="tab-list"] {
-        background-color: #ffffff;
+    .agrifooter a {
+        text-decoration: none;
+        color: #1abc9c;
+        font-weight: 500;
     }
-
-    /* Cards / containers */
-    div[data-testid="stVerticalBlock"] {
-        background-color: #ffffff;
-    }
-
-    /* Text color fix */
-    html, body, [class*="css"]  {
-        color: #111111;
+    .agrifooter a:hover {
+        text-decoration: underline;
     }
     </style>
     """,
